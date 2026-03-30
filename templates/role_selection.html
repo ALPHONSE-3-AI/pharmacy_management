@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacy Management System - Login</title>
+    <!-- Modern Typography: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .bg-medical {
+            /* Full height medical image background */
+            background-image: linear-gradient(rgba(10, 40, 70, 0.4), rgba(20, 60, 90, 0.5)), url('{{ url_for('static', filename='images/bg.png') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-content {
+            text-align: center;
+            color: #ffffff;
+            margin-top: 8vh;
+            margin-bottom: 5vh;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header-content h1 {
+            font-weight: 700;
+            letter-spacing: -1px;
+            font-size: 3rem;
+        }
+        
+        .header-content p {
+            font-weight: 400;
+            font-size: 1.25rem;
+            opacity: 0.95;
+        }
+
+        .glass-card {
+            /* Glassmorphism Effect */
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            
+            /* Smooth transitions */
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+            text-decoration: none !important;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.3);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .icon-box {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .icon-admin {
+            background-color: #e0f2fe;
+            color: #0284c7;
+        }
+        
+        .icon-pharmacist {
+            background-color: #dcfce3;
+            color: #16a34a;
+        }
+        
+        .icon-clerk {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+
+        .card-title {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-desc {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-bottom: 0;
+            line-height: 1.5;
+        }
+
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 2rem 0;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-medical">
+    <div class="container pb-4">
+        <!-- Title Section -->
+        <div class="header-content">
+            <h1>Pharmacy Management System</h1>
+            <p>Select your role to continue</p>
+        </div>
+
+        <!-- Role Cards Row -->
+        <div class="row justify-content-center px-lg-5">
+            
+            <!-- Admin -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <a href="{{ url_for('login', role='admin') }}" class="glass-card">
+                    <div class="icon-box icon-admin">
+                        <!-- Briefcase Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M6.5 1A1.5 1.5 0 0 0 5 2.5V3H1.5A1.5 1.5 0 0 0 0 4.5v8A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 14.5 3H11v-.5A1.5 1.5 0 0 0 9.5 1h-3zm0 1h3a.5.5 0 0 1 .5.5V3H6v-.5a.5.5 0 0 1 .5-.5zm1.886 6.914L15 7.151V12.5a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5V7.15l6.614 1.764a1.5 1.5 0 0 0 1.157 0z"/>
+                        </svg>
+                    </div>
+                    <h4 class="card-title">Admin</h4>
+                    <p class="card-desc">Manage system settings, global inventory oversight, and staff monitoring.</p>
+                </a>
+            </div>
+
+            <!-- Pharmacist -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <a href="{{ url_for('login', role='pharmacist') }}" class="glass-card">
+                    <div class="icon-box icon-pharmacist">
+                        <!-- Activity / Heartbeat icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                            <path fill-rule="evenodd" d="M12 7H9.5V4.5a.5.5 0 0 0-1 0V7H6a.5.5 0 0 0 0 1h2.5v2.5a.5.5 0 0 0 1 0V8H12a.5.5 0 0 0 0-1z" fill="#fff"/>
+                        </svg>
+                    </div>
+                    <h4 class="card-title">Pharmacist</h4>
+                    <p class="card-desc">Manage inventory stock, record incoming safe batches, and track expiries.</p>
+                </a>
+            </div>
+
+            <!-- Sales Clerk -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <a href="{{ url_for('login', role='salesclerk') }}" class="glass-card">
+                    <div class="icon-box icon-clerk">
+                        <!-- POS / Cart Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l1.25 5h8.22l1.25-5H3.14zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"/>
+                        </svg>
+                    </div>
+                    <h4 class="card-title">Sales Clerk</h4>
+                    <p class="card-desc">Process daily customer sales, scan point-of-sale transactions, and dispense medicine.</p>
+                </a>
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        &copy; 2026 Pharmacy Management System. Designed for secure healthcare distribution.
+    </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

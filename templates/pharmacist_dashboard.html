@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2">
+    <div>
+        <h3 class="fw-bold" style="color: var(--ph-primary);"><span class="badge status-success me-2 align-middle px-2">Pharmacist</span> Registry Hub</h3>
+        <p class="text-muted mb-0">Oversight of incoming batches, price maintenance, and catalog modifications.</p>
+    </div>
+    <div class="mt-2 mt-md-0">
+        <a href="{{ url_for('add_medicine') }}" class="btn btn-action shadow-sm py-2 px-4 shadow-sm fw-semibold">Add Medicine</a>
+    </div>
+</div>
+
+<div class="card border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" style="background-color: transparent;">
+                <thead style="background-color: var(--ph-bg)">
+                    <tr>
+                        <th class="ps-4 py-3">Internal ID</th>
+                        <th class="py-3">Medicine Designation</th>
+                        <th class="py-3">Expiry Deadline</th>
+                        <th class="py-3">Wholesale Value</th>
+                        <th class="py-3">Warehouse Stock</th>
+                        <th class="text-center py-3 pe-4">Controls</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in medicines %}
+                    <tr>
+                        <td class="text-muted ps-4">#{{ item.id }}</td>
+                        <td>
+                            <span class="fw-semibold fs-6" style="color: var(--ph-primary)">{{ item.name }}</span>
+                            <div class="small fw-normal text-muted mt-1">{{ item.manufacturer.name }}</div>
+                        </td>
+                        <td class="text-muted" style="font-family: monospace;">{{ item.expiry }}</td>
+                        <td class="fw-semibold text-muted">${{ "%.2f"|format(item.price) }}</td>
+                        <td>
+                            {% if item.quantity < 10 %}
+                                <span class="badge badge-subtle status-danger">{{ item.quantity }} (Critical)</span>
+                            {% else %}
+                                <span class="badge badge-subtle status-success">{{ item.quantity }} Units</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center pe-4">
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('update_medicine', id=item.id) }}" class="btn btn-outline-theme">Modify</a>
+                                <form action="{{ url_for('delete_medicine', id=item.id) }}" method="POST" class="d-inline" onsubmit="return confirm('WARNING: Are you sure you want to delete this medicine entirely?');">
+                                    <button type="submit" class="btn btn-outline-danger shadow-none ms-1">Scrap</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted"><h4>Catalog Empty</h4><p>Click "Add Medicine" to register new supply drops.</p></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+    <h2>Inventory Dashboard</h2>
+    <div>
+        {% if role in ['admin', 'pharmacist'] %}
+            <a href="{{ url_for('add_medicine') }}" class="btn btn-success">+ Add New Medicine</a>
+        {% endif %}
+        {% if role in ['admin', 'salesclerk'] %}
+            <a href="{{ url_for('sell_medicine') }}" class="btn btn-warning ms-2 shadow-sm fw-bold">Process Sale</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Medicine Name</th>
+                        <th>Manufacturer</th>
+                        <th>Expiry Date</th>
+                        <th>Price ($)</th>
+                        <th>Stock Qty</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in medicines %}
+                    <tr class="{% if item.quantity < 10 %}table-danger{% endif %}">
+                        <td>{{ item.id }}</td>
+                        <td class="fw-bold">{{ item.name }}</td>
+                        <td>{{ item.manufacturer.name }}</td>
+                        <td>{{ item.expiry }}</td>
+                        <td>${{ "%.2f"|format(item.price) }}</td>
+                        <td>
+                            {% if item.quantity < 10 %}
+                                <span class="badge bg-danger">{{ item.quantity }} (Low)</span>
+                            {% else %}
+                                <span class="badge bg-success">{{ item.quantity }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">No medicines found in the inventory.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

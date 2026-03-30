@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2">
+    <div>
+        <h3 class="fw-bold" style="color: var(--ph-primary);">Registry Intake</h3>
+        <p class="text-muted mb-0">Record arriving medicine units into the tracking catalog.</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-0 pb-2">
+            <div class="card-body px-4 px-md-5 pt-4">
+                <form method="POST">
+                    <div class="mb-4">
+                        <label class="form-label text-muted fw-bold small text-uppercase">Nomenclature Reference</label>
+                        <input type="text" name="name" class="form-control py-2 text-dark" style="background-color: var(--ph-bg); border-color: var(--ph-border); font-size: 1.1rem; font-weight: 500;" placeholder="e.g., Amoxicillin 500mg" required autofocus>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-sm-6 mb-3 mb-sm-0">
+                            <label class="form-label text-muted fw-bold small text-uppercase">Distribution Price ($)</label>
+                            <input type="number" step="0.01" min="0" name="price" class="form-control py-2 text-dark fw-bold" style="background-color: var(--ph-bg); border-color: var(--ph-border);" placeholder="0.00" required>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label text-muted fw-bold small text-uppercase">Batch Quantity Input</label>
+                            <input type="number" name="quantity" min="0" class="form-control py-2 text-dark fw-bold" style="background-color: var(--ph-bg); border-color: var(--ph-border);" placeholder="100" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label text-muted fw-bold small text-uppercase">Mandatory Expiry Date</label>
+                        <input type="date" name="expiry" class="form-control py-2 text-dark" style="background-color: var(--ph-bg); border-color: var(--ph-border);" required>
+                    </div>
+                    
+                    <div class="mb-5">
+                        <label class="form-label text-muted fw-bold small text-uppercase">Supplier / Manufacturing Node</label>
+                        <select name="manufacturer_id" class="form-select py-2 text-dark fw-bold" style="background-color: var(--ph-bg); border-color: var(--ph-border);" required>
+                            <option value="" selected disabled>Select Origin Identity</option>
+                            {% for mfg in manufacturers %}
+                                <option value="{{ mfg.id }}">{{ mfg.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-theme px-4 py-2 rounded-pill">Abort Intake</a>
+                        <button type="submit" class="btn btn-theme px-5 py-2 fw-semibold rounded-pill">Commit to Registry</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

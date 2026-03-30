@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-5">
+        <div class="card border-0 pb-2">
+            <div class="card-header border-0 text-center pt-4">
+                <h4 class="mb-1 fw-bold" style="color: var(--ph-primary)">{{ role.capitalize() }} Enrollment</h4>
+                <p class="text-muted small">Establish your internal clearance credentials.</p>
+            </div>
+            <div class="card-body px-4 px-md-5">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight: 500; font-size: 0.9rem;">Desired Username</label>
+                        <input type="text" name="username" class="form-control py-2" style="background-color: var(--ph-bg); border-color: var(--ph-border);" required autofocus>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label" style="font-weight: 500; font-size: 0.9rem;">Master Passcode</label>
+                        <input type="password" name="password" class="form-control py-2" style="background-color: var(--ph-bg); border-color: var(--ph-border);" required>
+                    </div>
+                    <button type="submit" class="btn btn-action w-100 py-2 fw-semibold mb-4">Register Personnel</button>
+                    
+                    <div class="text-center pt-3 border-top">
+                        <small class="text-muted d-block mb-2">Clearance established? <a href="{{ url_for('login', role=role) }}" style="color: var(--ph-primary); font-weight: 600; text-decoration: none;">Proceed to Check-In</a></small>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

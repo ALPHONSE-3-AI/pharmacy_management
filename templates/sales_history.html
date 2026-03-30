@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2">
+    <div>
+        <h3 class="fw-bold" style="color: var(--ph-primary);">Financial Audit Ledger</h3>
+        <p class="text-muted mb-0">Record of all dispensed transactions across the POS.</p>
+    </div>
+    <div class="mt-2 mt-md-0">
+        <a href="{{ url_for('index') }}" class="btn btn-outline-theme px-4 py-2 rounded-pill fw-semibold">&larr; Return to Portals</a>
+    </div>
+</div>
+
+<div class="card border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" style="background-color: transparent;">
+                <thead style="background-color: var(--ph-bg)">
+                    <tr>
+                        <th class="ps-4 py-3 border-0">Transaction Ref</th>
+                        <th class="py-3 border-0">Timestamp</th>
+                        <th class="py-3 border-0">Disbursed Medicine</th>
+                        <th class="text-center py-3 border-0">Units Sold</th>
+                        <th class="pe-4 text-end py-3 border-0">Revenue ($)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in sales %}
+                    <tr>
+                        <td class="text-muted ps-4" style="font-family: monospace;">#{{ sale.id }}</td>
+                        <td class="text-muted" style="font-family: monospace;">{{ sale.date }}</td>
+                        <td><span class="fw-semibold" style="color: var(--ph-primary)">{{ sale.medicine.name }}</span></td>
+                        <td class="text-center">
+                            <span class="badge badge-subtle status-neutral">{{ sale.quantity }} unit(s)</span>
+                        </td>
+                        <td class="pe-4 fw-bold text-end" style="color: var(--ph-text); font-family: monospace; font-size: 1.1rem;">
+                            +${{ "%.2f"|format(sale.total) }}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted"><h4>Ledger Empty</h4><p>No transactions have been recorded in the database.</p></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

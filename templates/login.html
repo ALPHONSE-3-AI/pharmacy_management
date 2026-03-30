@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-5">
+        <div class="card border-0 pb-2">
+            <div class="card-header border-0 text-center pt-4">
+                <h4 class="mb-1 fw-bold" style="color: var(--ph-primary)">{{ role.capitalize() }} Authentication</h4>
+                <p class="text-muted small">Please enter your secure credentials.</p>
+            </div>
+            <div class="card-body px-4 px-md-5">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight: 500; font-size: 0.9rem;">Platform ID / Username</label>
+                        <input type="text" name="username" class="form-control py-2" style="background-color: var(--ph-bg); border-color: var(--ph-border);" required autofocus>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label" style="font-weight: 500; font-size: 0.9rem;">Passcode</label>
+                        <input type="password" name="password" class="form-control py-2" style="background-color: var(--ph-bg); border-color: var(--ph-border);" required>
+                    </div>
+                    <button type="submit" class="btn btn-theme w-100 py-2 fw-semibold mb-4">Validate Access</button>
+                    
+                    <div class="text-center pt-3 border-top">
+                        <small class="text-muted d-block mb-2">Unregistered? <a href="{{ url_for('signup', role=role) }}" style="color: var(--ph-accent); font-weight: 500; text-decoration: none;">Request Access</a></small>
+                        <small><a href="{{ url_for('index') }}" class="text-muted text-decoration-none">&larr; Return to Portals</a></small>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
