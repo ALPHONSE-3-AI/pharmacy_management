@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from dotenv import load_dotenv
-from models import db, User, Manufacturer, Medicine, Sales
+from models import db, User, Manufacturer, ManufacturerContact, Medicine, Batch, Customer, SalesTransaction, SalesDetails
 
 load_dotenv()
 
@@ -46,11 +46,11 @@ def login(role):
         username = request.form['username']
         password = request.form['password']
         
-        user = User.query.filter_by(username=username, password=password, role=role).first()
+        user = User.query.filter_by(Username=username, Password=password, Role=role).first()
         if user:
-            session['user_id'] = user.id
-            session['role'] = user.role
-            session['username'] = user.username
+            session['user_id'] = user.UserID
+            session['role'] = user.Role
+            session['username'] = user.Username
             flash(f'Logged in successfully as {role.capitalize()}!', 'success')
             return redirect_to_dashboard(role)
         else:
@@ -68,11 +68,11 @@ def signup(role):
             flash('Fields cannot be empty!', 'danger')
             return redirect(url_for('signup', role=role))
             
-        if User.query.filter_by(username=username).first():
+        if User.query.filter_by(Username=username).first():
             flash('Username already exists!', 'danger')
             return redirect(url_for('signup', role=role))
             
-        new_user = User(username=username, password=password, role=role)
+        new_user = User(Username=username, Password=password, Role=role)
         db.session.add(new_user)
         db.session.commit()
         
@@ -92,7 +92,7 @@ def logout():
 def admin_dashboard():
     if not require_role(['admin']): return unauthorized()
     medicines = Medicine.query.all()
-    sales = Sales.query.order_by(Sales.date.desc(), Sales.id.desc()).all()
+    sales = SalesTransaction.query.order_by(SalesTransaction.Date.desc(), SalesTransaction.TransactionID.desc()).all()
     return render_template('admin_dashboard.html', medicines=medicines, sales=sales)
 
 @app.route('/pharmacist/dashboard')
@@ -116,7 +116,8 @@ def add_medicine():
         name = request.form['name'].strip()
         price_str = request.form['price']
         quantity_str = request.form['quantity']
-        expiry_str = request.form['expiry']
+        expiry_str = request.form['expiry_date']
+        reorder_point_str = request.form.get('reorder_point', '10')
         manufacturer_id = request.form.get('manufacturer_id')
         
         # Validation
@@ -127,16 +128,26 @@ def add_medicine():
         try:
             price = float(price_str)
             quantity = int(quantity_str)
-            if price < 0 or quantity < 0:
-                flash('Price and quantity cannot be negative.', 'danger')
+            reorder_point = int(reorder_point_str)
+            if price < 0 or quantity < 0 or reorder_point < 0:
+                flash('Price, quantity, and reorder point cannot be negative.', 'danger')
                 return redirect(url_for('add_medicine'))
             expiry = datetime.strptime(expiry_str, '%Y-%m-%d').date()
         except ValueError:
             flash('Invalid input formats.', 'danger')
             return redirect(url_for('add_medicine'))
         
-        new_medicine = Medicine(name=name, price=price, quantity=quantity, expiry=expiry, manufacturer_id=int(manufacturer_id))
+        # Expiry date must be strictly in the future
+        if expiry <= datetime.now().date():
+            flash('Invalid ExpiryDate: The expiry date must be a future date. Medicine was not added.', 'danger')
+            return redirect(url_for('add_medicine'))
+        
+        new_medicine = Medicine(Name=name, Price=price, Quantity=quantity, ReorderPoint=reorder_point, ManufacturerID=int(manufacturer_id))
         db.session.add(new_medicine)
+        db.session.flush()
+        
+        new_batch = Batch(MedicineID=new_medicine.MedicineID, ExpiryDate=expiry)
+        db.session.add(new_batch)
         db.session.commit()
         
         flash('Medicine added successfully!', 'success')
@@ -144,7 +155,7 @@ def add_medicine():
         
     manufacturers = Manufacturer.query.all()
     if not manufacturers:
-        seed = Manufacturer(name="Standard Pharma", contact="1800-PHARMA")
+        seed = Manufacturer(CompanyName="Standard Pharma", LicenseNo="1800-PHARMA")
         db.session.add(seed)
         db.session.commit()
         manufacturers = [seed]
@@ -155,21 +166,22 @@ def add_medicine():
 def update_medicine(id):
     if not require_role(['admin', 'pharmacist']): return unauthorized()
     
-    medicine = Medicine.query.get_or_404(id)
+    medicine = Medicine.query.filter_by(MedicineID=id).first_or_404()
     if request.method == 'POST':
         name = request.form['name'].strip()
         price = float(request.form['price'])
         quantity = int(request.form['quantity'])
+        reorder_point = int(request.form.get('reorder_point', 10))
         
-        if not name or price < 0 or quantity < 0:
+        if not name or price < 0 or quantity < 0 or reorder_point < 0:
             flash('Invalid data format. No negative numbers allowed.', 'danger')
             return redirect(url_for('update_medicine', id=id))
             
-        medicine.name = name
-        medicine.price = price
-        medicine.quantity = quantity
-        medicine.expiry = datetime.strptime(request.form['expiry'], '%Y-%m-%d').date()
-        medicine.manufacturer_id = int(request.form['manufacturer_id'])
+        medicine.Name = name
+        medicine.Price = price
+        medicine.Quantity = quantity
+        medicine.ReorderPoint = reorder_point
+        medicine.ManufacturerID = int(request.form['manufacturer_id'])
         
         db.session.commit()
         flash('Medicine updated successfully!', 'success')
@@ -181,17 +193,18 @@ def update_medicine(id):
 @app.route('/delete_medicine/<int:id>', methods=['POST'])
 def delete_medicine(id):
     if not require_role(['admin', 'pharmacist']): return unauthorized()
-    medicine = Medicine.query.get_or_404(id)
+    medicine = Medicine.query.filter_by(MedicineID=id).first_or_404()
     
     # Optional logic: block if sales history exists
-    related_sales = Sales.query.filter_by(medicine_id=medicine.id).first()
+    related_sales = SalesDetails.query.filter_by(MedicineID=medicine.MedicineID).first()
     if related_sales:
         flash('Cannot delete medicine. It has recorded sales history.', 'danger')
         return redirect_to_dashboard(session['role'])
         
+    Batch.query.filter_by(MedicineID=medicine.MedicineID).delete()
     db.session.delete(medicine)
     db.session.commit()
-    flash(f'{medicine.name} deleted completely.', 'warning')
+    flash(f'{medicine.Name} deleted completely.', 'warning')
     return redirect_to_dashboard(session['role'])
 
 @app.route('/sell_medicine', methods=['GET', 'POST'])
@@ -201,9 +214,13 @@ def sell_medicine():
     if request.method == 'POST':
         medicine_id_str = request.form.get('medicine_id')
         quantity_str = request.form.get('quantity')
+        customer_id_str = request.form.get('customer_id', '').strip()
+        customer_name = request.form.get('customer_name', '').strip()
+        customer_phone = request.form.get('customer_phone', '').strip()
+        payment_method = request.form.get('payment_method', '').strip()
         
-        if not medicine_id_str or not quantity_str:
-            flash('Please select a medicine and quantity.', 'danger')
+        if not medicine_id_str or not quantity_str or not payment_method:
+            flash('Please select a medicine, quantity, and payment method.', 'danger')
             return redirect(url_for('sell_medicine'))
             
         sell_quantity = int(quantity_str)
@@ -212,34 +229,89 @@ def sell_medicine():
             return redirect(url_for('sell_medicine'))
             
         medicine = Medicine.query.get(int(medicine_id_str))
-        if sell_quantity > medicine.quantity:
-            flash(f'Insufficient stock! Only {medicine.quantity} left.', 'danger')
+        if sell_quantity > medicine.Quantity:
+            flash(f'Insufficient stock! Only {medicine.Quantity} left.', 'danger')
             return redirect(url_for('sell_medicine'))
             
-        medicine.quantity -= sell_quantity
-        total_amount = medicine.price * sell_quantity
+        medicine.Quantity -= sell_quantity
         
-        sale_record = Sales(
-            medicine_id=medicine.id,
-            quantity=sell_quantity,
-            total=total_amount,
-            date=datetime.now().date()
+        customer_id = None
+        if customer_id_str:
+            customer = Customer.query.get(int(customer_id_str))
+            if customer:
+                customer_id = customer.CustomerID
+                
+        if not customer_id and customer_name and customer_phone:
+            customer = Customer.query.filter_by(Phone=customer_phone).first()
+            if not customer:
+                customer = Customer(Name=customer_name, Phone=customer_phone)
+                db.session.add(customer)
+                db.session.flush()
+            customer_id = customer.CustomerID
+            
+        transaction = SalesTransaction(
+            Date=datetime.now().date(),
+            PaymentMethod=payment_method,
+            CustomerID=customer_id
         )
-        db.session.add(sale_record)
-        db.session.commit()
+        db.session.add(transaction)
+        db.session.flush()
         
-        flash(f'Sale successful! Total amount: ${total_amount:.2f}', 'success')
+        details = SalesDetails(
+            TransactionID=transaction.TransactionID,
+            MedicineID=medicine.MedicineID,
+            Quantity=sell_quantity,
+            UnitPrice=medicine.Price
+        )
+        db.session.add(details)
+        db.session.commit()
+        total_amount = medicine.Price * sell_quantity
+        
+        flash(f'Sale successful! Total amount: ₹{total_amount:.2f}', 'success')
         return redirect_to_dashboard(session['role'])
         
-    medicines = Medicine.query.filter(Medicine.quantity > 0).all()
+    medicines = Medicine.query.filter(Medicine.Quantity > 0).all()
     return render_template('sell_medicine.html', medicines=medicines)
 
 @app.route('/sales_history')
 def sales_history():
     if not require_role(['admin']): return unauthorized()
         
-    sales = Sales.query.order_by(Sales.date.desc(), Sales.id.desc()).all()
+    sales = SalesTransaction.query.order_by(SalesTransaction.Date.desc(), SalesTransaction.TransactionID.desc()).all()
     return render_template('sales_history.html', sales=sales)
+
+@app.route('/manufacturers')
+def track_manufacturers():
+    if not require_role(['admin']): return unauthorized()
+    manufacturers = Manufacturer.query.all()
+    return render_template('manufacturers.html', manufacturers=manufacturers)
+
+@app.route('/add_manufacturer', methods=['GET', 'POST'])
+def add_manufacturer():
+    if not require_role(['admin']): return unauthorized()
+    
+    if request.method == 'POST':
+        company_name = request.form['company_name'].strip()
+        license_no = request.form['license_no'].strip()
+        phone = request.form['phone'].strip()
+        email = request.form['email'].strip()
+        
+        if not company_name or not license_no or not phone or not email:
+            flash('All fields are required.', 'danger')
+            return redirect(url_for('add_manufacturer'))
+            
+        mfg = Manufacturer(CompanyName=company_name, LicenseNo=license_no)
+        db.session.add(mfg)
+        db.session.flush()
+        
+        contact = ManufacturerContact(Phone=phone, Email=email, ManufacturerID=mfg.ManufacturerID)
+        db.session.add(contact)
+        db.session.commit()
+        
+        flash('Manufacturer successfully added!', 'success')
+        return redirect(url_for('track_manufacturers'))
+        
+    return render_template('add_manufacturer.html')
 
 def unauthorized():
     flash('Unauthorized Access. Your role does not permit viewing this page.', 'danger')

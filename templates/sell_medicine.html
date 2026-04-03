@@ -5,29 +5,54 @@
     <div class="col-md-7">
         <div class="card border-0 pb-3" style="border-top: 4px solid var(--ph-accent) !important;">
             <div class="card-header border-0 pb-0 pt-4 px-5 bg-transparent">
-                <h4 class="mb-1 fw-bold" style="color: var(--ph-primary)">Process POS Transaction</h4>
-                <p class="text-muted small">Select unit stock for instantaneous distribution output.</p>
+                <h4 class="mb-1 fw-bold" style="color: var(--ph-primary)">POS Checkout</h4>
+                <p class="text-muted small">Process a medicine sale transaction.</p>
             </div>
             <div class="card-body px-5">
                 <form method="POST">
                     <div class="mb-4 mt-2">
-                        <label class="form-label text-muted fw-bold small text-uppercase">Select Medicine Parameter</label>
+                        <label class="form-label text-muted fw-bold small text-uppercase">MedicineID</label>
                         <select name="medicine_id" class="form-select py-2 fw-semibold" style="background-color: var(--ph-bg); border-color: var(--ph-border); border-radius: 8px;" required>
-                            <option value="" selected disabled>--- Choose Output Selection ---</option>
+                            <option value="" selected disabled>--- Select a Medicine ---</option>
                             {% for item in medicines %}
-                                <option value="{{ item.id }}">{{ item.name }} (${{ "%.2f"|format(item.price) }} / ea | Availability: [{{ item.quantity }}])</option>
+                                <option value="{{ item.MedicineID }}">{{ item.Name }} (₹{{ "%.2f"|format(item.Price) }} / ea | Stock: {{ item.Quantity }})</option>
                             {% endfor %}
                         </select>
                     </div>
-                    
-                    <div class="mb-5">
-                        <label class="form-label text-muted fw-bold small text-uppercase">Distribution Amount</label>
+
+                    <div class="mb-4">
+                        <label class="form-label text-muted fw-bold small text-uppercase">Quantity</label>
                         <input type="number" name="quantity" class="form-control py-2 fs-5 text-center fw-bold text-dark" style="background-color: var(--ph-bg); border-color: var(--ph-border); border-radius: 8px; width: 140px;" min="1" value="1" required>
                     </div>
 
+                    <hr style="border-color: var(--ph-border); margin: 2rem 0;">
+                    <h6 class="fw-bold mb-1" style="color: var(--ph-primary);">Customer Details <span class="text-muted fw-normal small">(Optional)</span></h6>
+                    <p class="text-muted small mb-3">Enter a <strong>CustomerID</strong> to link an existing customer, OR fill in <strong>Name + Phone</strong> to create a new one.</p>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted fw-bold small text-uppercase">CustomerID</label>
+                        <input type="number" name="customer_id" min="1" class="form-control py-2 text-dark" style="background-color: var(--ph-bg); border-color: var(--ph-border);" placeholder="Existing customer ID (e.g. 3)">
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-sm-6 mb-3 mb-sm-0">
+                            <label class="form-label text-muted fw-bold small text-uppercase">Name</label>
+                            <input type="text" name="customer_name" class="form-control py-2 text-dark" style="background-color: var(--ph-bg); border-color: var(--ph-border);" placeholder="New customer name">
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label text-muted fw-bold small text-uppercase">Phone</label>
+                            <input type="text" name="customer_phone" class="form-control py-2 text-dark" style="background-color: var(--ph-bg); border-color: var(--ph-border);" placeholder="e.g. 9876543210">
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="form-label text-muted fw-bold small text-uppercase">PaymentMethod</label>
+                        <input type="text" name="payment_method" class="form-control py-2 text-dark fw-bold" style="background-color: var(--ph-bg); border-color: var(--ph-border);" placeholder="e.g. Cash, Card" required>
+                    </div>
+
                     <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                        <a href="{{ url_for('index') }}" class="btn btn-outline-theme px-4 py-2 rounded-pill">Cancel Checkout</a>
-                        <button type="submit" class="btn btn-action fw-bold px-5 py-2 shadow-sm rounded-pill">Distribute Items</button>
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-theme px-4 py-2 rounded-pill">Cancel</a>
+                        <button type="submit" class="btn btn-action fw-bold px-5 py-2 shadow-sm rounded-pill">Confirm Sale</button>
                     </div>
                 </form>
             </div>

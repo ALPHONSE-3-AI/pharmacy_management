@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2">
+    <div>
+        <h3 class="fw-bold" style="color: var(--ph-primary);">Supplier Node Directory</h3>
+        <p class="text-muted mb-0">Record of all active manufacturing supply chains.</p>
+    </div>
+    <div class="mt-2 mt-md-0">
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-theme px-4 py-2 rounded-pill fw-semibold me-2">Back Default</a>
+        <a href="{{ url_for('add_manufacturer') }}" class="btn btn-action shadow-sm py-2 px-4 rounded-pill shadow-sm fw-semibold">Add Manufacturer</a>
+    </div>
+</div>
+
+<div class="card border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" style="background-color: transparent;">
+                <thead style="background-color: var(--ph-bg)">
+                    <tr>
+                        <th class="ps-4 py-3 border-0">ManufacturerID</th>
+                        <th class="py-3 border-0">CompanyName</th>
+                        <th class="py-3 border-0">LicenseNo</th>
+                        <th class="py-3 border-0">Phone</th>
+                        <th class="pe-4 py-3 border-0 text-end">Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mfg in manufacturers %}
+                    <tr>
+                        <td class="text-muted ps-4" style="font-family: monospace;">#{{ mfg.ManufacturerID }}</td>
+                        <td><span class="fw-semibold fs-6" style="color: var(--ph-primary)">{{ mfg.CompanyName }}</span></td>
+                        <td class="text-muted" style="font-family: monospace;">{{ mfg.LicenseNo }}</td>
+                        <td>
+                            {% if mfg.contacts %}
+                                <span class="badge badge-subtle status-neutral">{{ mfg.contacts[0].Phone }}</span>
+                            {% else %}
+                                <span class="text-muted small">Unassigned</span>
+                            {% endif %}
+                        </td>
+                        <td class="pe-4 fw-normal text-end text-muted">
+                            {% if mfg.contacts %}
+                                {{ mfg.contacts[0].Email }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted"><h4>Directory Empty</h4><p>No manufacturing nodes are currently registered.</p></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -17,28 +17,28 @@
             <table class="table table-hover align-middle mb-0" style="background-color: transparent;">
                 <thead style="background-color: var(--ph-bg)">
                     <tr>
-                        <th class="ps-4 py-3">Reference ID</th>
-                        <th class="py-3">Article nomenclature</th>
-                        <th class="py-3">Retail Price</th>
-                        <th class="py-3">Availability</th>
+                        <th class="ps-4 py-3">MedicineID</th>
+                        <th class="py-3">Name</th>
+                        <th class="py-3">Price</th>
+                        <th class="py-3">Quantity</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in medicines %}
                     <tr>
-                        <td class="text-muted ps-4">#{{ item.id }}</td>
+                        <td class="text-muted ps-4">#{{ item.MedicineID }}</td>
                         <td>
-                            <span class="fw-semibold" style="color: var(--ph-primary)">{{ item.name }}</span>
-                            <div class="small fw-normal text-muted mt-1">{{ item.manufacturer.name }}</div>
+                            <span class="fw-semibold" style="color: var(--ph-primary)">{{ item.Name }}</span>
+                            <div class="small fw-normal text-muted mt-1">{{ item.manufacturer.CompanyName }}</div>
                         </td>
-                        <td class="fw-semibold" style="color: var(--ph-text)">${{ "%.2f"|format(item.price) }}</td>
+                        <td class="fw-semibold" style="color: var(--ph-text)">₹{{ "%.2f"|format(item.Price) }}</td>
                         <td>
-                            {% if item.quantity == 0 %}
+                            {% if item.Quantity == 0 %}
                                 <span class="badge badge-subtle status-danger">Out of Stock</span>
-                            {% elif item.quantity < 10 %}
-                                <span class="badge badge-subtle status-danger">{{ item.quantity }} Left</span>
+                            {% elif item.Quantity < item.ReorderPoint %}
+                                <span class="badge badge-subtle status-danger">{{ item.Quantity }} Left</span>
                             {% else %}
-                                <span class="badge badge-subtle status-success">{{ item.quantity }} Units</span>
+                                <span class="badge badge-subtle status-success">{{ item.Quantity }} Units</span>
                             {% endif %}
                         </td>
                     </tr>

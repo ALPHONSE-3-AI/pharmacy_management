@@ -23,23 +23,23 @@
                         <th>Medicine Name</th>
                         <th>Manufacturer</th>
                         <th>Expiry Date</th>
-                        <th>Price ($)</th>
+                        <th>Price (₹)</th>
                         <th>Stock Qty</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in medicines %}
-                    <tr class="{% if item.quantity < 10 %}table-danger{% endif %}">
-                        <td>{{ item.id }}</td>
-                        <td class="fw-bold">{{ item.name }}</td>
+                    <tr class="{% if item.Quantity < 10 %}table-danger{% endif %}">
+                        <td>{{ item.MedicineID }}</td>
+                        <td class="fw-bold">{{ item.Name }}</td>
                         <td>{{ item.manufacturer.name }}</td>
                         <td>{{ item.expiry }}</td>
-                        <td>${{ "%.2f"|format(item.price) }}</td>
+                        <td>₹{{ "%.2f"|format(item.Price) }}</td>
                         <td>
-                            {% if item.quantity < 10 %}
-                                <span class="badge bg-danger">{{ item.quantity }} (Low)</span>
+                            {% if item.Quantity < 10 %}
+                                <span class="badge bg-danger">{{ item.Quantity }} (Low)</span>
                             {% else %}
-                                <span class="badge bg-success">{{ item.quantity }}</span>
+                                <span class="badge bg-success">{{ item.Quantity }}</span>
                             {% endif %}
                         </td>
                     </tr>

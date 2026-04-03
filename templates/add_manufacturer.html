@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2">
+    <div>
+        <h3 class="fw-bold" style="color: var(--ph-primary);">Register New Manufacturer</h3>
+        <p class="text-muted mb-0">Record a highly-trusted vendor entity.</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-0 pb-2">
+            <div class="card-body px-4 px-md-5 pt-4">
+                <form method="POST">
+                    <div class="mb-4">
+                        <label class="form-label text-muted fw-bold small text-uppercase">Company Name</label>
+                        <input type="text" name="company_name" class="form-control py-2 text-dark" style="background-color: var(--ph-bg); border-color: var(--ph-border); font-size: 1.1rem; font-weight: 500;" placeholder="e.g., Global Pharma Inc" required autofocus>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label text-muted fw-bold small text-uppercase">Valid License Registration No.</label>
+                        <input type="text" name="license_no" class="form-control py-2 text-dark" style="background-color: var(--ph-bg); border-color: var(--ph-border);" placeholder="e.g., L-90021" required>
+                    </div>
+                    
+                    <hr style="border-color: var(--ph-border); margin: 2rem 0;">
+                    <h6 class="text-muted fw-bold mb-3">Primary Corporate Contact</h6>
+                    
+                    <div class="row mb-5">
+                        <div class="col-sm-6 mb-3 mb-sm-0">
+                            <label class="form-label text-muted fw-bold small text-uppercase">Direct Phone Link</label>
+                            <input type="text" name="phone" class="form-control py-2 text-dark fw-bold" style="background-color: var(--ph-bg); border-color: var(--ph-border);" placeholder="(800)-555-0100" required>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label text-muted fw-bold small text-uppercase">Entity Email Inbox</label>
+                            <input type="email" name="email" class="form-control py-2 text-dark fw-bold" style="background-color: var(--ph-bg); border-color: var(--ph-border);" placeholder="support@domain.xyz" required>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <a href="{{ url_for('track_manufacturers') }}" class="btn btn-outline-theme px-4 py-2 rounded-pill">Abort Intake</a>
+                        <button type="submit" class="btn btn-theme px-5 py-2 fw-semibold rounded-pill">Establish Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

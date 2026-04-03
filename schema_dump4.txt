@@ -1,0 +1,56 @@
+
+Table: batch
+  batch_no (int)
+  medicine_id (int)
+  expiry_date (date)
+
+Table: customer
+  customer_id (int)
+  name (varchar(100))
+  phone (varchar(15))
+
+Table: manufacturer
+  ManufacturerID (int)
+  CompanyName (varchar(100))
+  LicenseNo (varchar(100))
+
+Table: manufacturer_contact
+  ContactID (int)
+  Phone (varchar(15))
+  Email (varchar(100))
+  ManufacturerID (int)
+
+Table: medicine
+  id (int)
+  name (varchar(100))
+  price (float)
+  quantity (int)
+  expiry (date)
+  manufacturer_id (int)
+  reorder_point (int)
+
+Table: sales
+  id (int)
+  medicine_id (int)
+  quantity (int)
+  total (float)
+  date (date)
+
+Table: sales_details
+  sales_details_id (int)
+  transaction_id (int)
+  medicine_id (int)
+  quantity (int)
+  unit_price (float)
+
+Table: sales_transaction
+  transaction_id (int)
+  date (date)
+  payment_method (varchar(50))
+  customer_id (int)
+
+Table: users
+  id (int)
+  username (varchar(50))
+  password (varchar(50))
+  role (varchar(20))

@@ -3,11 +3,11 @@
 {% block content %}
 <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2">
     <div>
-        <h3 class="fw-bold" style="color: var(--ph-primary);">Financial Audit Ledger</h3>
-        <p class="text-muted mb-0">Record of all dispensed transactions across the POS.</p>
+        <h3 class="fw-bold" style="color: var(--ph-primary);">Sales Transactions</h3>
+        <p class="text-muted mb-0">Full record of all sales_transaction and sales_details entries.</p>
     </div>
     <div class="mt-2 mt-md-0">
-        <a href="{{ url_for('index') }}" class="btn btn-outline-theme px-4 py-2 rounded-pill fw-semibold">&larr; Return to Portals</a>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-theme px-4 py-2 rounded-pill fw-semibold">&larr; Back to Dashboard</a>
     </div>
 </div>
 
@@ -17,29 +17,51 @@
             <table class="table table-hover align-middle mb-0" style="background-color: transparent;">
                 <thead style="background-color: var(--ph-bg)">
                     <tr>
-                        <th class="ps-4 py-3 border-0">Transaction Ref</th>
-                        <th class="py-3 border-0">Timestamp</th>
-                        <th class="py-3 border-0">Disbursed Medicine</th>
-                        <th class="text-center py-3 border-0">Units Sold</th>
-                        <th class="pe-4 text-end py-3 border-0">Revenue ($)</th>
+                        <th class="ps-4 py-3 border-0">TransactionID</th>
+                        <th class="py-3 border-0">Date</th>
+                        <th class="py-3 border-0">PaymentMethod</th>
+                        <th class="py-3 border-0">CustomerID</th>
+                        <th class="py-3 border-0">Name</th>
+                        <th class="py-3 border-0">Phone</th>
+                        <th class="py-3 border-0">Medicine (Name)</th>
+                        <th class="text-center py-3 border-0">Quantity</th>
+                        <th class="pe-4 text-end py-3 border-0">UnitPrice Total</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for sale in sales %}
-                    <tr>
-                        <td class="text-muted ps-4" style="font-family: monospace;">#{{ sale.id }}</td>
-                        <td class="text-muted" style="font-family: monospace;">{{ sale.date }}</td>
-                        <td><span class="fw-semibold" style="color: var(--ph-primary)">{{ sale.medicine.name }}</span></td>
-                        <td class="text-center">
-                            <span class="badge badge-subtle status-neutral">{{ sale.quantity }} unit(s)</span>
-                        </td>
-                        <td class="pe-4 fw-bold text-end" style="color: var(--ph-text); font-family: monospace; font-size: 1.1rem;">
-                            +${{ "%.2f"|format(sale.total) }}
-                        </td>
-                    </tr>
+                        {% for detail in sale.details %}
+                        <tr>
+                            <td class="text-muted ps-4" style="font-family: monospace;">#{{ sale.TransactionID }}</td>
+                            <td class="text-muted" style="font-family: monospace;">{{ sale.Date }}</td>
+                            <td>
+                                <span class="badge badge-subtle status-neutral">{{ sale.PaymentMethod }}</span>
+                            </td>
+                            <td class="text-muted" style="font-family: monospace;">
+                                {% if sale.customer %}
+                                    #{{ sale.customer.CustomerID }}
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td class="fw-semibold" style="color: var(--ph-primary);">
+                                {{ sale.customer.Name if sale.customer else 'Guest' }}
+                            </td>
+                            <td class="text-muted">
+                                {{ sale.customer.Phone if sale.customer else '—' }}
+                            </td>
+                            <td><span class="fw-semibold" style="color: var(--ph-accent)">{{ detail.medicine.Name }}</span></td>
+                            <td class="text-center">
+                                <span class="badge badge-subtle status-neutral">{{ detail.Quantity }} unit(s)</span>
+                            </td>
+                            <td class="pe-4 fw-bold text-end" style="color: var(--ph-text); font-family: monospace; font-size: 1.05rem;">
+                                +₹{{ "%.2f"|format(detail.UnitPrice * detail.Quantity) }}
+                            </td>
+                        </tr>
+                        {% endfor %}
                     {% else %}
                     <tr>
-                        <td colspan="5" class="text-center py-5 text-muted"><h4>Ledger Empty</h4><p>No transactions have been recorded in the database.</p></td>
+                        <td colspan="9" class="text-center py-5 text-muted"><h4>No Transactions Found</h4><p>No sales have been recorded yet.</p></td>
                     </tr>
                     {% endfor %}
                 </tbody>

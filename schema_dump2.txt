@@ -1,0 +1,11 @@
+
+Table: manufacturer
+  id (int)
+  name (varchar(100))
+  contact (varchar(100))
+
+Table: manufacturer_contact
+  contact_id (int)
+  phone (varchar(15))
+  email (varchar(100))
+  manufacturer_id (int)
