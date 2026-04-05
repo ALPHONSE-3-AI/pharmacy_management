@@ -40,9 +40,62 @@
                         </select>
                     </div>
 
+                    <hr style="border-color: var(--ph-border); margin: 2rem 0;">
+                    <h6 class="fw-bold mb-3" style="color: var(--ph-primary);">Pharmacist Advanced Details <span class="text-secondary fw-normal small">(MongoDB Extension)</span></h6>
+                    
+                    <div class="mb-4">
+                        <label class="form-label text-muted fw-bold small text-uppercase">Description</label>
+                        <textarea name="description" class="form-control py-2 text-dark" rows="2" style="background-color: var(--ph-bg); border-color: var(--ph-border);">{{ details.description if details else '' }}</textarea>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-sm-6 mb-3 mb-sm-0">
+                            <label class="form-label text-muted fw-bold small text-uppercase">Composition</label>
+                            <input type="text" name="composition" class="form-control py-2 text-dark" style="background-color: var(--ph-bg); border-color: var(--ph-border);" value="{{ details.composition if details else '' }}" placeholder="e.g. 500mg Amoxicillin">
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label text-muted fw-bold small text-uppercase">Dosage Instructions</label>
+                            <input type="text" name="dosage" class="form-control py-2 text-dark" style="background-color: var(--ph-bg); border-color: var(--ph-border);" value="{{ details.dosage if details else '' }}" placeholder="e.g. Twice daily after meals">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-muted fw-bold small text-uppercase">Common Uses <span class="fw-normal small text-lowercase">(Comma separated)</span></label>
+                        <textarea name="common_uses" class="form-control py-2 text-dark" rows="1" style="background-color: var(--ph-bg); border-color: var(--ph-border);" placeholder="Fever, Pain...">{{ details.common_uses|join(', ') if details and details.common_uses else '' }}</textarea>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-sm-6 mb-3 mb-sm-0">
+                            <label class="form-label text-muted fw-bold small text-uppercase">Side Effects <span class="fw-normal small text-lowercase">(Comma separated)</span></label>
+                            <textarea name="side_effects" class="form-control py-2 text-dark" rows="2" style="background-color: var(--ph-bg); border-color: var(--ph-border);" placeholder="Nausea, Dizziness...">{{ details.side_effects|join(', ') if details and details.side_effects else '' }}</textarea>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label text-muted fw-bold small text-uppercase">Precautions <span class="fw-normal small text-lowercase">(Comma separated)</span></label>
+                            <textarea name="precautions" class="form-control py-2 text-dark" rows="2" style="background-color: var(--ph-bg); border-color: var(--ph-border);" placeholder="Avoid alcohol...">{{ details.precautions|join(', ') if details and details.precautions else '' }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-muted fw-bold small text-uppercase">Warnings & Risks <span class="fw-normal small text-lowercase">(Comma separated)</span></label>
+                        <textarea name="warnings" class="form-control py-2 text-dark" rows="1" style="background-color: var(--ph-bg); border-color: var(--ph-border);" placeholder="Allergy warnings...">{{ details.warnings|join(', ') if details and details.warnings else '' }}</textarea>
+                    </div>
+
+                    <div class="row mb-5">
+                        <div class="col-sm-8 mb-3 mb-sm-0">
+                            <label class="form-label text-muted fw-bold small text-uppercase">Storage Instructions</label>
+                            <input type="text" name="storage_instructions" class="form-control py-2 text-dark" style="background-color: var(--ph-bg); border-color: var(--ph-border);" value="{{ details.storage_instructions if details else '' }}" placeholder="e.g. Below 25°C in dry place">
+                        </div>
+                        <div class="col-sm-4 d-flex align-items-center mt-sm-4">
+                            <div class="form-check form-switch p-0 m-0 d-flex align-items-center">
+                                <input class="form-check-input ms-0 me-2" type="checkbox" name="doctor_consultation_required" id="doctorConsultOnUpdate" style="width: 2.3em; height: 1.15em;" {% if details and details.doctor_consultation_required %}checked{% endif %}>
+                                <label class="form-check-label text-muted fw-bold small" for="doctorConsultOnUpdate">Consultation Required</label>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="d-flex justify-content-between align-items-center pt-3 border-top">
                         <a href="{{ url_for('index') }}" class="btn btn-outline-theme px-4 py-2 rounded-pill">Abort Modification</a>
-                        <button type="submit" class="btn btn-theme px-5 py-2 fw-semibold rounded-pill">Save Reference Update</button>
+                        <button type="submit" class="btn btn-theme px-5 py-2 fw-semibold rounded-pill shadow-sm">Save Reference Update</button>
                     </div>
                 </form>
             </div>

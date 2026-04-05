@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-11">
+        <!-- Header: Rebranding to Medical Registry Details -->
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h2 class="fw-bold mb-1" style="color: #1e293b;">Medical Registry Details</h2>
+                <p class="text-secondary mb-0">Advanced clinical parameters and pharmacology for {{ medicine.Name }}.</p>
+            </div>
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm border-2">
+                <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+
+        {% if details %}
+        <div class="row g-4">
+            <!-- Left Main Column: Primary Clinical Info -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm p-5 mb-4 rounded-4">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h3 class="fw-bold mb-2">{{ medicine.Name }}</h3>
+                            <div class="d-flex gap-2">
+                                <span class="badge bg-dark rounded-pill px-3 shadow-sm">ID: {{ medicine.MedicineID }}</span>
+                                {% if details.doctor_consultation_required %}
+                                    <span class="badge bg-danger rounded-pill px-3 shadow-sm">Consultation Required</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted fw-bold text-uppercase d-block small">Added On</small>
+                            <div class="fw-semibold text-secondary">April 04, 2026</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="small fw-bold text-muted text-uppercase d-block mb-2">Description</label>
+                        <p class="text-secondary italic mb-0" style="line-height: 1.6; font-size: 1.05rem;">
+                            {{ details.description or 'A pharmacological treatment indicated for targeted clinical recovery as specified by healthcare professionals.' }}
+                        </p>
+                    </div>
+
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-6">
+                            <label class="small fw-bold text-muted text-uppercase d-block mb-2">Composition</label>
+                            <div class="p-3 bg-light border-start border-dark border-4 rounded-end">
+                                <p class="mb-0 text-secondary small">{{ details.composition or 'Standard pharmaceutical grade components as per regulatory registry.' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="small fw-bold text-muted text-uppercase d-block mb-2">Dosage Guidelines</label>
+                            <div class="p-3 bg-light border-start border-success border-4 rounded-end">
+                                <p class="mb-0 text-secondary small">{{ details.dosage or 'Dosage should be as directed by a consultant physician based on patient criteria.' }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4 mb-md-0">
+                            <h6 class="fw-bold mb-3">Common Uses</h6>
+                            {% if details.common_uses %}
+                                <ul class="ps-3 mb-0">
+                                    {% for use in details.common_uses %}
+                                        <li class="text-secondary mb-2">{{ use }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted small italic">General therapeutic indication.</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3" style="color: #dc2626;">Side Effects</h6>
+                            {% if details.side_effects %}
+                                <ul class="ps-3 mb-0">
+                                    {% for effect in details.side_effects %}
+                                        <li class="text-secondary mb-2">{{ effect }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted small italic">None recorded in this registry.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Stock Info Bar (Optional addition for utility) -->
+                <div class="card border-0 shadow-sm p-4 rounded-4 bg-light">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <span class="small fw-bold text-muted text-uppercase d-block">Current Stock</span>
+                            <div class="fs-4 fw-bold {% if medicine.Quantity < medicine.ReorderPoint %}text-danger{% else %}text-success{% endif %}">
+                                {{ medicine.Quantity }} Units
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <span class="small fw-bold text-muted text-uppercase d-block">Market Price</span>
+                            <div class="fs-4 fw-bold text-dark">₹{{ "%.2f"|format(medicine.Price) }}</div>
+                        </div>
+                        <div class="col-md-4">
+                            <span class="small fw-bold text-muted text-uppercase d-block">Manufacturer</span>
+                            <div class="fw-semibold">{{ medicine.manufacturer.CompanyName if medicine.manufacturer else 'Local/Gen.' }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar Column: Safety Cards -->
+            <div class="col-lg-4">
+                <!-- Precautions Card -->
+                <div class="card border-0 shadow-sm mb-4 rounded-4" style="background-color: #fffbeb;">
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold text-warning-emphasis mb-3">Precautions</h6>
+                        {% if details.precautions %}
+                            <ul class="ps-3 mb-0 small">
+                                {% for prec in details.precautions %}
+                                    <li class="text-secondary mb-2">{{ prec }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-muted small italic mb-0">Standard pharmacist guidance applies.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Warnings Card -->
+                <div class="card border-0 shadow-sm mb-4 rounded-4" style="background-color: #fef2f2;">
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold text-danger mb-3">Warnings</h6>
+                        {% if details.warnings %}
+                            <ul class="ps-3 mb-0 small">
+                                {% for warn in details.warnings %}
+                                    <li class="text-secondary mb-2">{{ warn }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-muted small italic mb-0">No contraindications listed.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Storage Instructions Card -->
+                <div class="card border-0 shadow-sm mb-4 rounded-4" style="background-color: #f8fafc;">
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold text-muted text-uppercase small mb-3">Storage Instructions</h6>
+                        <p class="text-secondary fw-semibold mb-0 small" style="line-height: 1.5;">
+                            {{ details.storage_instructions or 'Store at room temperature (15°C to 30°C) in a tightly closed container.' }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <!-- Safety Fallback: Medicine found in MySQL but missing MongoDB specs -->
+        <div class="card border-0 shadow-sm p-5 text-center rounded-4">
+            <div class="py-5">
+                <i class="bi bi-database-dash text-muted fs-1 mb-3"></i>
+                <h4 class="fw-bold">No Clinical Specs Registered</h4>
+                <p class="text-muted mx-auto" style="max-width: 500px;">
+                    This medicine exists in the inventory registry (ID: {{ medicine.MedicineID }}), but no advanced clinical data is stored in the MongoDB medical database.
+                </p>
+                <div class="mt-4">
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-theme px-4 rounded-pill">Manage Inventory</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
